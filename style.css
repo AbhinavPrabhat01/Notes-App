@@ -120,54 +120,59 @@ body {
 }
 
 /* ===== CUSTOM BUTTON (BASE) ===== */
+
+/* ===== FIXED UIVERSE BUTTON ===== */
 .custom-btn {
-  width: 140px;
-  height: 45px;
+  width: 150px;
+  height: 50px;
+  position: relative;
   cursor: pointer;
   display: flex;
   align-items: center;
   border: none;
   border-radius: 6px;
-  position: relative;
   overflow: hidden;
 }
 
+/* Smooth transition */
+.custom-btn,
 .custom-btn span {
   transition: 200ms;
 }
 
 /* TEXT */
 .custom-btn .text {
-  transform: translateX(30px);
+  transform: translateX(35px);
   color: white;
-  font-weight: 600;
+  font-weight: bold;
 }
 
 /* ICON */
 .custom-btn .icon {
   position: absolute;
-  border-left: 1px solid rgba(255,255,255,0.2);
-  transform: translateX(100px);
-  height: 100%;
-  width: 45px;
+  left: 110px; /* CRITICAL FIX */
+  height: 40px;
+  width: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-left: 1px solid rgba(0,0,0,0.2);
 }
 
+/* SVG */
 .custom-btn svg {
-  width: 18px;
-  fill: #fff;
+  width: 20px;
+  fill: #eee;
 }
 
-/* HOVER EFFECT */
+/* HOVER */
 .custom-btn:hover .text {
   color: transparent;
 }
 
 .custom-btn:hover .icon {
-  width: 100%;
-  transform: translateX(0);
+  width: 150px;
+  left: 0;
   border-left: none;
 }
 
@@ -178,20 +183,12 @@ body {
 
 /* ===== SAVE BUTTON ===== */
 .save-btn {
-  background: #16a34a;
-}
-
-.save-btn .icon {
-  border-left: 1px solid #14532d;
+  background: #00a600;
 }
 
 /* ===== DELETE BUTTON ===== */
 .delete-btn {
-  background: #dc2626;
-}
-
-.delete-btn .icon {
-  border-left: 1px solid #7f1d1d;
+  background: #d11a2a;
 }
 
 /* ===== Editor ===== */
