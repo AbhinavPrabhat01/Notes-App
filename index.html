@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notes App</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2 class="logo">MyNotes</h2>
+
+      <button class="new-note-btn">+ New Note</button>
+
+      <input type="text" placeholder="Search notes..." class="search" />
+
+      <div class="notes-list">
+        <div class="note-item active">
+          <h4>Meeting Notes</h4>
+          <p>Discuss project timeline...</p>
+        </div>
+
+        <div class="note-item">
+          <h4>Shopping List</h4>
+          <p>Milk, eggs, bread...</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+      <div class="toolbar">
+        <input type="text" class="title" placeholder="Note Title" />
+
+        <div class="actions">
+
+          <!-- SAVE BUTTON -->
+          <button class="custom-btn save-btn noselect">
+            <span class="text">Save</span>
+            <span class="icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z"></path>
+              </svg>
+            </span>
+          </button>
+
+          <!-- DELETE BUTTON -->
+          <button class="custom-btn delete-btn noselect">
+            <span class="text">Delete</span>
+            <span class="icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M6 7h12l-1 14H7L6 7zm3-3h6l1 2H8l1-2z"></path>
+              </svg>
+            </span>
+          </button>
+
+        </div>
+      </div>
+
+      <div class="empty-state">Select or create a note</div>
+
+      <textarea class="editor" placeholder="Start writing your note..."></textarea>
+
+    </main>
+  </div>
+</body>
+</html>

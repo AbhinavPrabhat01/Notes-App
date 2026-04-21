@@ -1,0 +1,232 @@
+/* ===== Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+/* ===== Base ===== */
+body {
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: #e2e8f0;
+  height: 100vh;
+}
+
+/* ===== Layout ===== */
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  width: 280px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(14px);
+
+  border-right: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 4px 0 25px rgba(0,0,0,0.4);
+}
+
+.logo {
+  font-weight: 600;
+  font-size: 20px;
+}
+
+/* ===== Default Button (New Note only) ===== */
+.new-note-btn {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border: none;
+  padding: 10px;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* ===== Search ===== */
+.search {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #020617;
+  color: white;
+}
+
+/* ===== Notes ===== */
+.notes-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.note-item {
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+
+.note-item:hover {
+  background: rgba(255,255,255,0.05);
+  transform: translateY(-2px);
+}
+
+.note-item.active {
+  background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(59,130,246,0.1));
+  border-left: 3px solid #3b82f6;
+}
+
+/* ===== Main ===== */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* ===== Toolbar ===== */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 20px;
+
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(10px);
+
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ===== Title ===== */
+.title {
+  flex: 1;
+  margin-right: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #020617;
+  color: white;
+}
+
+/* ===== Actions ===== */
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ===== CUSTOM BUTTON (BASE) ===== */
+.custom-btn {
+  width: 140px;
+  height: 45px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border: none;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.custom-btn span {
+  transition: 200ms;
+}
+
+/* TEXT */
+.custom-btn .text {
+  transform: translateX(30px);
+  color: white;
+  font-weight: 600;
+}
+
+/* ICON */
+.custom-btn .icon {
+  position: absolute;
+  border-left: 1px solid rgba(255,255,255,0.2);
+  transform: translateX(100px);
+  height: 100%;
+  width: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-btn svg {
+  width: 18px;
+  fill: #fff;
+}
+
+/* HOVER EFFECT */
+.custom-btn:hover .text {
+  color: transparent;
+}
+
+.custom-btn:hover .icon {
+  width: 100%;
+  transform: translateX(0);
+  border-left: none;
+}
+
+/* CLICK */
+.custom-btn:active .icon svg {
+  transform: scale(0.8);
+}
+
+/* ===== SAVE BUTTON ===== */
+.save-btn {
+  background: #16a34a;
+}
+
+.save-btn .icon {
+  border-left: 1px solid #14532d;
+}
+
+/* ===== DELETE BUTTON ===== */
+.delete-btn {
+  background: #dc2626;
+}
+
+.delete-btn .icon {
+  border-left: 1px solid #7f1d1d;
+}
+
+/* ===== Editor ===== */
+.editor {
+  flex: 1;
+  padding: 25px;
+  border: none;
+  resize: none;
+  outline: none;
+  background: transparent;
+  color: #e2e8f0;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+/* ===== Empty State ===== */
+.empty-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.4;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 768px) {
+  .sidebar {
+    position: absolute;
+    width: 240px;
+    height: 100%;
+    transform: translateX(-100%);
+    transition: 0.3s;
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+}
