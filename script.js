@@ -6,6 +6,9 @@ const saveBtn = document.querySelector(".custom-btn.save-btn.noselect");
 const deleteBtn = document.querySelector(".custom-btn.delete-btn.noselect");
 const emptyState = document.querySelector(".empty-state");
 const searchInput = document.querySelector(".search");
+const modal = document.getElementById("deleteModal");
+const confirmBtn = document.querySelector(".confirm-btn");
+const cancelBtn = document.querySelector(".cancel-btn");
 
 let notes = [];
 let isDirty = false;
@@ -164,22 +167,54 @@ function loadFromLocalStorage() {
 
 deleteBtn.addEventListener("click", () => {
   if (!activeNoteId) return;
-  const confirmDelete = confirm("Are you sure you want to delete this note?");
+  modal.classList.add("active");
+});
 
-  if (!confirmDelete) return;
-
-  notes = notes.filter((note) => note.id !== activeNoteId);
-
-  if (notes.length > 0) {
-    activeNoteId = notes[0].id;
-  } else {
-    activeNoteId = null;
-  }
+confirmBtn.addEventListener("click", () => {
+  notes = notes.filter(note => note.id !== activeNoteId);
+  activeNoteId = null;
 
   saveToLocalStorage();
-  renderNotes();
+  renderNotes(searchInput.value);
   renderActiveNote();
+
+  closeModal();
 });
+
+cancelBtn.addEventListener("click", closeModal);
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeModal();
+});
+
+function closeModal() {
+  modal.classList.remove("active");
+}
+
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) {
+    closeModal();
+  }
+});
+
+// deleteBtn.addEventListener("click", () => {
+//   if (!activeNoteId) return;
+//   const confirmDelete = confirm("Are you sure you want to delete this note?");
+
+//   if (!confirmDelete) return;
+
+//   notes = notes.filter((note) => note.id !== activeNoteId);
+
+//   if (notes.length > 0) {
+//     activeNoteId = notes[0].id;
+//   } else {
+//     activeNoteId = null;
+//   }
+
+//   saveToLocalStorage();
+//   renderNotes();
+//   renderActiveNote();
+// });
 
 
 saveBtn.addEventListener("click", () => {

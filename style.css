@@ -387,3 +387,96 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ===== MODAL OVERLAY ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+
+  z-index: 100;
+}
+
+/* ACTIVE STATE */
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ===== MODAL BOX ===== */
+.modal-box {
+  background: rgba(15, 23, 42, 0.9);
+  padding: 25px;
+  border-radius: 14px;
+  width: 320px;
+
+  text-align: center;
+  color: #e2e8f0;
+
+  transform: scale(0.9);
+  transition: transform 0.25s ease;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Animate in */
+.modal-overlay.active .modal-box {
+  transform: scale(1);
+}
+
+/* ===== TEXT ===== */
+.modal-box h3 {
+  margin-bottom: 10px;
+}
+
+.modal-box p {
+  opacity: 0.7;
+  margin-bottom: 20px;
+}
+
+/* ===== BUTTONS ===== */
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* Cancel */
+.cancel-btn {
+  background: #1e293b;
+  color: #cbd5f5;
+}
+
+/* Delete */
+.confirm-btn {
+  background: #d11a2a;
+  color: white;
+}
+
+/* Hover */
+.modal-btn:hover {
+  opacity: 0.85;
+}
