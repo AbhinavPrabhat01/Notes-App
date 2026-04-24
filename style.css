@@ -340,15 +340,32 @@ body {
   color: #e2e8f0;
   font-size: 16px;
   line-height: 1.7;
+  position: relative;
+  z-index: 1;
 }
 
 /* ===== Empty State ===== */
+
 .empty-state {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  opacity: 0.4;
+  
+  color: #e2e8f0;
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
+
+  padding: 20px 30px;
+  border-radius: 12px;
+
+  background: rgba(20, 27, 44, 0.71);
+  backdrop-filter: blur(12px);       
+  -webkit-backdrop-filter: blur(12px);
+
+  z-index: 10;
+  pointer-events: none;
 }
 
 /* ===== Mobile ===== */
@@ -364,4 +381,9 @@ body {
   .sidebar.active {
     transform: translateX(0);
   }
+}
+
+.title:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
