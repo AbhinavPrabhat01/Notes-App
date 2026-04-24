@@ -178,6 +178,8 @@ confirmBtn.addEventListener("click", () => {
   renderNotes(searchInput.value);
   renderActiveNote();
 
+  showToast("Note deleted", "error");
+
   closeModal();
 });
 
@@ -197,25 +199,6 @@ modal.addEventListener("click", (e) => {
   }
 });
 
-// deleteBtn.addEventListener("click", () => {
-//   if (!activeNoteId) return;
-//   const confirmDelete = confirm("Are you sure you want to delete this note?");
-
-//   if (!confirmDelete) return;
-
-//   notes = notes.filter((note) => note.id !== activeNoteId);
-
-//   if (notes.length > 0) {
-//     activeNoteId = notes[0].id;
-//   } else {
-//     activeNoteId = null;
-//   }
-
-//   saveToLocalStorage();
-//   renderNotes();
-//   renderActiveNote();
-// });
-
 
 saveBtn.addEventListener("click", () => {
   if (!activeNoteId || !isDirty) return;
@@ -223,12 +206,7 @@ saveBtn.addEventListener("click", () => {
   saveToLocalStorage();
   isDirty = false;
 
-  // Optional UX feedback (clean, no alert spam)
-  saveBtn.querySelector(".text").innerText = "Saved";
-
-  setTimeout(() => {
-    saveBtn.querySelector(".text").innerText = "Save";
-  }, 3000);
+  showToast("Note saved");
 });
 
 window.addEventListener("beforeunload", (e) => {
@@ -251,3 +229,26 @@ notesList.addEventListener("click", (e) => {
 searchInput.addEventListener("input", () => {
   renderNotes(searchInput.value);
 });
+
+
+function showToast(message, type = "success") {
+  const container = document.querySelector(".toast-container");
+
+  const toast = document.createElement("div");
+  toast.classList.add("toast", type);
+  toast.innerText = message;
+
+  container.appendChild(toast);
+
+  // trigger animation
+  setTimeout(() => toast.classList.add("show"), 10);
+
+  // auto remove
+  setTimeout(() => {
+    toast.classList.remove("show");
+
+    setTimeout(() => {
+      toast.remove();
+    }, 300);
+  }, 2000);
+}
