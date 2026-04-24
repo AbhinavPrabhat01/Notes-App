@@ -31,32 +31,13 @@ function createNote() {
     id: Date.now(),
     title: "",
     content: "",
-    creationDate: new Date().toLocaleString(),
+    creationDate: new Date().toISOString(),
+    ismodified: false,
+    modificationDate: null,
   };
   notes.push(note);
   return note;
 }
-
-// function renderNotes() {
-//   notesList.innerHTML = "";
-//   notes.forEach((note) => {
-//     const noteItem = document.createElement("div");
-//     noteItem.addEventListener("click", () => {
-//       activeNoteId = note.id;
-//       renderNotes();
-//       renderActiveNote();
-//     });
-//     noteItem.classList.add("note-item");
-//     if (note.id === activeNoteId) {
-//       noteItem.classList.add("active");
-//     }
-//     noteItem.innerHTML = `
-//       <h4>${note.title}</h4>
-//       <p>${truncateAtWord(note.content)}</p>
-//     `;
-//     notesList.appendChild(noteItem);
-//   });
-// }
 
 function renderNotes(filter = "") {
   notesList.innerHTML = "";
@@ -71,6 +52,14 @@ function renderNotes(filter = "") {
   }
 
   filteredNotes.forEach((note) => {
+    const isEdited =
+      note.modificationDate !== null &&
+      note.modificationDate !== note.creationDate;
+
+    const dateText = isEdited
+      ? "Edited " + formatRelativeTime(note.modificationDate)
+      : "Created " + formatRelativeTime(note.creationDate);
+
     const noteItem = document.createElement("div");
 
     noteItem.classList.add("note-item");
@@ -79,8 +68,12 @@ function renderNotes(filter = "") {
     }
 
     noteItem.innerHTML = `
-      <h4>${note.title || "Untitled"}</h4>
+      <h4>
+  ${truncateAtWord(note.title) || "Untitled"}
+  ${note.id === activeNoteId ? '<span class="active-dot"></span>' : ""}
+</h4>
       <p>${truncateAtWord(note.content)}</p>
+      <span class="note-date">${dateText}</span>
     `;
 
     noteItem.addEventListener("click", () => {
@@ -92,6 +85,10 @@ function renderNotes(filter = "") {
     notesList.appendChild(noteItem);
   });
 }
+
+setInterval(() => {
+  renderNotes(searchInput.value);
+}, 60000); // every 1 min
 
 // To truncate the content preview in the note list without breaking words
 function truncateAtWord(text, maxLength = 20) {
@@ -128,6 +125,7 @@ function renderActiveNote() {
     titleInput.disabled = true;
     return;
   }
+
   titleInput.disabled = false;
   emptyState.style.display = "none";
 
@@ -171,8 +169,8 @@ deleteBtn.addEventListener("click", () => {
 });
 
 confirmBtn.addEventListener("click", () => {
-  notes = notes.filter(note => note.id !== activeNoteId);
-  activeNoteId = null;
+  notes = notes.filter((note) => note.id !== activeNoteId);
+  activeNoteId = notes.length > 0 ? notes[0].id : null; // select another note or null if none left
 
   saveToLocalStorage();
   renderNotes(searchInput.value);
@@ -199,14 +197,27 @@ modal.addEventListener("click", (e) => {
   }
 });
 
-
 saveBtn.addEventListener("click", () => {
   if (!activeNoteId || !isDirty) return;
+
+  const activeNote = notes.find((note) => note.id === activeNoteId);
+  if (activeNote) {
+    if (!activeNote.ismodified) {
+      activeNote.ismodified = true;
+    } else {
+      activeNote.modificationDate = new Date().toISOString();
+      
+      console.log("Note updated:", activeNote.modificationDate);
+    }
+  }
 
   saveToLocalStorage();
   isDirty = false;
 
   showToast("Note saved");
+
+  renderNotes(searchInput.value);
+  renderActiveNote();
 });
 
 window.addEventListener("beforeunload", (e) => {
@@ -230,7 +241,6 @@ searchInput.addEventListener("input", () => {
   renderNotes(searchInput.value);
 });
 
-
 function showToast(message, type = "success") {
   const container = document.querySelector(".toast-container");
 
@@ -251,4 +261,47 @@ function showToast(message, type = "success") {
       toast.remove();
     }, 300);
   }, 2000);
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function formatRelativeTime(dateString) {
+  const now = new Date();
+  const date = new Date(dateString);
+
+  const diffInSeconds = Math.floor((now - date) / 1000);
+
+  if (diffInSeconds < 60) return "Just now";
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) {
+    return diffInMinutes === 1 ? "1 min ago" : `${diffInMinutes} min ago`;
+  }
+
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) {
+    return diffInHours === 1 ? "1 hour ago" : `${diffInHours} hours ago`;
+  }
+
+  const diffInDays = Math.floor(diffInHours / 24);
+
+  if (diffInDays === 1) return "Yesterday";
+  if (diffInDays < 7) return `${diffInDays} days ago`;
+
+  // fallback to normal date for older notes
+  return date.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 }

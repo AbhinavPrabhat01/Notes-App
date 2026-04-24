@@ -80,10 +80,14 @@ body {
 .note-item.active {
   background: linear-gradient(
     135deg,
-    rgba(59, 130, 246, 0.3),
-    rgba(59, 130, 246, 0.1)
+    rgba(59, 130, 246, 0.35),
+    rgba(59, 130, 246, 0.15)
   );
-  border-left: 3px solid #3b82f6;
+
+  border-left: 4px solid #3b82f6;
+
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
+  transform: translateY(-2px);
 }
 
 /* ===== Main ===== */
@@ -524,4 +528,20 @@ body {
 
 .toast.error {
   border-left: 8px solid #ef4444;
+}
+
+.note-date {
+  font-size: 12px;
+  opacity: 0.5;
+  display: block;
+  margin-top: 6px;
+}
+
+.active-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: #3b82f6;
+  border-radius: 50%;
+  margin-left: 6px;
 }
