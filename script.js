@@ -9,14 +9,18 @@ const searchInput = document.querySelector(".search");
 const modal = document.getElementById("deleteModal");
 const confirmBtn = document.querySelector(".confirm-btn");
 const cancelBtn = document.querySelector(".cancel-btn");
+const saveIndicator = document.getElementById("saveIndicator");
 
 let notes = [];
 let isDirty = false;
 let activeNoteId = null;
+let lastSavedTitle = "";
+let lastSavedContent = "";
 
 loadFromLocalStorage();
 renderNotes();
 renderActiveNote();
+showSaved();
 
 newNoteBtn.addEventListener("click", () => {
   const note = createNote();
@@ -27,13 +31,13 @@ newNoteBtn.addEventListener("click", () => {
 });
 
 function createNote() {
+  const now = new Date().toISOString();
   const note = {
     id: Date.now(),
     title: "",
     content: "",
-    creationDate: new Date().toISOString(),
-    ismodified: false,
-    modificationDate: new Date().toISOString(),
+    creationDate: now,
+    modificationDate: null,
   };
   notes.push(note);
   return note;
@@ -46,25 +50,14 @@ function getNoteTime(note) {
 function renderNotes(filter = "") {
   notesList.innerHTML = "";
 
-  const filteredNotes = notes
-  .filter(
-    (note) =>
-      note.title.toLowerCase().includes(filter.toLowerCase()) ||
-      note.content.toLowerCase().includes(filter.toLowerCase())
-  )
-  .sort((a, b) => getNoteTime(b) - getNoteTime(a));
+  const filteredNotes = getSortedNotes(filter);
   if (filteredNotes.length === 0) {
     notesList.innerHTML = `<p style="opacity:0.5;">No notes found</p>`;
   }
 
   filteredNotes.forEach((note) => {
-    const isEdited =
-      note.modificationDate !== null &&
-      note.modificationDate !== note.creationDate;
-
-    const dateText = isEdited
-      ? "Edited " + formatRelativeTime(note.modificationDate)
-      : "Created " + formatRelativeTime(note.creationDate);
+    const displayDate = note.modificationDate || note.creationDate;
+    const dateText = formatRelativeTime(displayDate);
 
     const noteItem = document.createElement("div");
 
@@ -115,12 +108,9 @@ function renderActiveNote() {
   const activeNote = notes.find((note) => note.id === activeNoteId);
   if (!activeNote) {
     editor.style.filter = "blur(3px)";
-  } else {
-    editor.style.filter = "blur(0)";
-  }
-  if (!activeNote) {
     editor.style.opacity = "0.3";
   } else {
+    editor.style.filter = "blur(0)";
     editor.style.opacity = "1";
   }
 
@@ -132,6 +122,9 @@ function renderActiveNote() {
     return;
   }
 
+  lastSavedTitle = activeNote.title;
+  lastSavedContent = activeNote.content;
+
   titleInput.disabled = false;
   emptyState.style.display = "none";
 
@@ -140,22 +133,22 @@ function renderActiveNote() {
 }
 
 titleInput.addEventListener("input", () => {
-  const activeNote = notes.find((note) => note.id === activeNoteId);
-  if (activeNote) {
-    activeNote.title = titleInput.value;
-    isDirty = true;
-    renderNotes();
-  }
+  const note = notes.find((n) => n.id === activeNoteId);
+  if (!note) return;
+
+  note.title = titleInput.value;
+  triggerAutoSave();
 });
 
 editor.addEventListener("input", () => {
-  const activeNote = notes.find((note) => note.id === activeNoteId);
-  if (activeNote) {
-    activeNote.content = editor.value;
-    isDirty = true;
-    renderNotes();
-  }
+  const note = notes.find((n) => n.id === activeNoteId);
+  if (!note) return;
+
+  note.content = editor.value;
+  triggerAutoSave();
 });
+titleInput.addEventListener("blur", performSave);
+editor.addEventListener("blur", performSave);
 
 function saveToLocalStorage() {
   localStorage.setItem("notesApp", JSON.stringify(notes));
@@ -176,7 +169,9 @@ deleteBtn.addEventListener("click", () => {
 
 confirmBtn.addEventListener("click", () => {
   notes = notes.filter((note) => note.id !== activeNoteId);
-  activeNoteId = notes.length > 0 ? notes[0].id : null; // select another note or null if none left
+
+  const sorted = getSortedNotes(searchInput.value);
+  activeNoteId = sorted.length ? sorted[0].id : null;
 
   saveToLocalStorage();
   renderNotes(searchInput.value);
@@ -186,6 +181,16 @@ confirmBtn.addEventListener("click", () => {
 
   closeModal();
 });
+
+function getSortedNotes(filter = "") {
+  return notes
+    .filter(
+      (note) =>
+        note.title.toLowerCase().includes(filter.toLowerCase()) ||
+        note.content.toLowerCase().includes(filter.toLowerCase()),
+    )
+    .sort((a, b) => getNoteTime(b) - getNoteTime(a));
+}
 
 cancelBtn.addEventListener("click", closeModal);
 
@@ -203,34 +208,8 @@ modal.addEventListener("click", (e) => {
   }
 });
 
-saveBtn.addEventListener("click", () => {
-  if (!activeNoteId || !isDirty) return;
-
-  const activeNote = notes.find((note) => note.id === activeNoteId);
-  if (activeNote) {
-    if (!activeNote.ismodified) {
-      activeNote.ismodified = true;
-    } else {
-      activeNote.modificationDate = new Date().toISOString();
-      
-      console.log("Note updated:", activeNote.modificationDate);
-    }
-  }
-
-  saveToLocalStorage();
-  isDirty = false;
-
-  showToast("Note saved");
-
-  renderNotes(searchInput.value);
-  renderActiveNote();
-});
-
-window.addEventListener("beforeunload", (e) => {
-  if (isDirty) {
-    e.preventDefault();
-    e.returnValue = "";
-  }
+window.addEventListener("beforeunload", () => {
+  performSave();
 });
 
 // When user clicks anywhere outside the notes, active note should be deselected
@@ -311,3 +290,59 @@ function formatRelativeTime(dateString) {
     year: "numeric",
   });
 }
+
+let saveTimeout;
+
+function triggerAutoSave() {
+  if (!activeNoteId) return;
+
+  isDirty = true;
+  showSaving();
+
+  clearTimeout(saveTimeout);
+
+  saveTimeout = setTimeout(() => {
+    performSave();
+  }, 600);
+}
+
+function performSave() {
+  console.log("Performing save...");
+  if (!activeNoteId) return;
+
+  const activeNote = notes.find((n) => n.id === activeNoteId);
+  if (!activeNote) return;
+
+  const hasChanged =
+    activeNote.title !== lastSavedTitle ||
+    activeNote.content !== lastSavedContent;
+
+  if (!hasChanged) return;
+
+  const now = new Date().toISOString();
+  activeNote.modificationDate = now;
+  saveToLocalStorage();
+
+  lastSavedTitle = activeNote.title;
+  lastSavedContent = activeNote.content;
+
+  isDirty = false;
+  showSaved();
+
+  renderNotes(searchInput.value);
+}
+
+function showSaving() {
+  saveIndicator.textContent = "Saving...";
+  saveIndicator.classList.add("saving");
+  saveIndicator.classList.remove("saved");
+}
+
+function showSaved() {
+  saveIndicator.textContent = "Saved";
+  saveIndicator.classList.add("saved");
+  saveIndicator.classList.remove("saving");
+}
+setTimeout(() => {
+  showSaved();
+}, 200);
