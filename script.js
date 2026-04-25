@@ -33,20 +33,26 @@ function createNote() {
     content: "",
     creationDate: new Date().toISOString(),
     ismodified: false,
-    modificationDate: null,
+    modificationDate: new Date().toISOString(),
   };
   notes.push(note);
   return note;
 }
 
+function getNoteTime(note) {
+  return new Date(note.modificationDate || note.creationDate).getTime();
+}
+
 function renderNotes(filter = "") {
   notesList.innerHTML = "";
 
-  const filteredNotes = notes.filter(
+  const filteredNotes = notes
+  .filter(
     (note) =>
       note.title.toLowerCase().includes(filter.toLowerCase()) ||
-      note.content.toLowerCase().includes(filter.toLowerCase()),
-  );
+      note.content.toLowerCase().includes(filter.toLowerCase())
+  )
+  .sort((a, b) => getNoteTime(b) - getNoteTime(a));
   if (filteredNotes.length === 0) {
     notesList.innerHTML = `<p style="opacity:0.5;">No notes found</p>`;
   }

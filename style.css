@@ -21,6 +21,10 @@ body {
 
 /* ===== Sidebar ===== */
 .sidebar {
+
+   height: 100vh;
+  overflow: hidden;
+
   width: 280px;
   padding: 20px;
   display: flex;
@@ -60,8 +64,15 @@ body {
 
 /* ===== Notes ===== */
 .notes-list {
+  position: relative;
   flex: 1;
   overflow-y: auto;
+
+  scrollbar-width: none;
+}
+
+.notes-list::-webkit-scrollbar {
+  display: none;
 }
 
 .note-item {
@@ -370,21 +381,6 @@ body {
 
   z-index: 10;
   pointer-events: none;
-}
-
-/* ===== Mobile ===== */
-@media (max-width: 768px) {
-  .sidebar {
-    position: absolute;
-    width: 240px;
-    height: 100%;
-    transform: translateX(-100%);
-    transition: 0.3s;
-  }
-
-  .sidebar.active {
-    transform: translateX(0);
-  }
 }
 
 .title:disabled {
